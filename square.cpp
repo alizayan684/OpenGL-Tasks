@@ -229,17 +229,19 @@ void animateBall() {
     ballPositionX += ballVelocityX * deltaTime;
     ballPositionY += ballVelocityY * deltaTime;
     ballPositionZ += ballVelocityZ * deltaTime;
-    ballVelocityZ += gravity * deltaTime;
+    ballVelocityY += gravity * deltaTime;
 
     // Check for collisions
     if (ballPositionX >= 5.0f || ballPositionX <= -5.0f) {
         ballVelocityX = -ballVelocityX;
+        ballVelocityX = ballVelocityX*0.8f;
     }
     if (ballPositionY <= 0.3f) {
-        ballVelocityY = -ballVelocityY;
+        ballVelocityY = -ballVelocityY * 0.8f;
     }
     if (ballPositionZ >= 5.0f || ballPositionZ <= -5.0f) {
         ballVelocityZ = -ballVelocityZ;
+        ballVelocityZ = ballVelocityZ*0.8f;
     }
 }
 void resetBall() {
