@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 
-// Function Prototypes
+// Function Prototypes//////////////////////////////////////////////////
 void init();
 void display();
 void reshape(int width, int height);
@@ -12,10 +12,13 @@ void timer(int value);
 void drawScene();
 void animateBall();
 void drawMan();
+void resetBall();
+///////////////////////////////////////////////////////////////////////
 
-// Global Variables
+// Global Variables //////////////////////////////////////////////////
 bool animate = false;
 bool ballThrown = false;
+bool paused = false;
 float ballPositionX = -2.0f; // Start near the man's hand
 float ballPositionY = 1.5f;
 float ballPositionZ = 0.0f;
@@ -35,36 +38,20 @@ float armAngle = 0.0f;
 float armSpeed = 3.0f;
 bool armSwingingBack = true;
 
-void resetBall() {
-    ballPositionX = -2.0f;
-    ballPositionY = 1.5f;
-    ballPositionZ = 0.0f;
-    ballVelocityX = 8.0f;
-    ballVelocityY = 10.0f;
-    ballVelocityZ = 2.0f;
-    ballThrown = false;
-}
-
+///////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv) {
-    // Initialize GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
-    glutCreateWindow("3D Man Throwing Ball Animation");
-
-    // Initialize GLEW
+    glutCreateWindow("A Man Throwing A Ball Like A Boss!");
     glewInit();
 
-    // Set up callbacks
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
     glutTimerFunc(16, timer, 0);
-
-    // Initialize OpenGL settings
     init();
 
-    // Enter the GLUT main loop
     glutMainLoop();
     return 0;
 }
@@ -90,11 +77,20 @@ void reshape(int width, int height) {
 
 void keyboard(unsigned char key, int x, int y) {
     if (key == ' ') {
-        animate = !animate;
-        if (!animate) {
-            resetBall();
+        if (!animate && !paused) {
+            // Start or replay the animation
+            animate = true;
+            paused = false;
+            resetBall(); // Reset the scene if it's completely stopped
+        } else if (animate && !paused) {
+            // Pause the animation
+            paused = true;
+        } else if (paused) {
+            // Resume the animation
+            paused = false;
         }
     }
+
     // Rotation controls
     if (key == 'x')
         rotationAngleX += 5.0f;
@@ -113,14 +109,14 @@ void keyboard(unsigned char key, int x, int y) {
 }
 
 void timer(int value) {
-    if (animate) {
+    if (animate && !paused) {
         if (!ballThrown) {
             // Swing arm back and forth before throwing the ball
             if (armSwingingBack) {
                 armAngle += armSpeed;
                 if (armAngle >= 45.0f) {
                     armSwingingBack = false;
-                    ballThrown = true; // Throw the ball
+                    ballThrown = true;
                 }
             }
         } else {
@@ -245,4 +241,13 @@ void animateBall() {
     if (ballPositionZ >= 5.0f || ballPositionZ <= -5.0f) {
         ballVelocityZ = -ballVelocityZ;
     }
+}
+void resetBall() {
+    ballPositionX = -2.0f;
+    ballPositionY = 1.5f;
+    ballPositionZ = 0.0f;
+    ballVelocityX = 8.0f;
+    ballVelocityY = 10.0f;
+    ballVelocityZ = 2.0f;
+    ballThrown = false;
 }
